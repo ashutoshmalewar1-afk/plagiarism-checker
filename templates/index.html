@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>AI Plagiarism Checker</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(120deg,#1e3c72,#2a5298);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+}
+
+.container{
+background:white;
+color:black;
+padding:50px;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+text-align:center;
+}
+
+button{
+background:#2a5298;
+color:white;
+border:none;
+padding:12px 25px;
+font-size:16px;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1e3c72;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI Plagiarism Detection System</h1>
+
+<p>Upload assignment files to detect plagiarism</p>
+
+<form action="/check" method="post" enctype="multipart/form-data">
+
+<input type="file" name="files" multiple required>
+
+<br><br>
+
+<button type="submit">Check Plagiarism</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

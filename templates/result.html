@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Plagiarism Results</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+text-align:center;
+}
+
+table{
+margin:auto;
+border-collapse:collapse;
+width:80%;
+background:white;
+box-shadow:0 5px 20px rgba(0,0,0,0.2);
+}
+
+th,td{
+padding:12px;
+border:1px solid #ddd;
+}
+
+th{
+background:#333;
+color:white;
+}
+
+.bar{
+height:20px;
+background:#4caf50;
+}
+
+.high{color:red;font-weight:bold;}
+.medium{color:orange;font-weight:bold;}
+.low{color:green;font-weight:bold;}
+
+button{
+background:#28a745;
+color:white;
+border:none;
+padding:10px 20px;
+font-size:16px;
+border-radius:5px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Plagiarism Results</h2>
+
+<table>
+
+<tr>
+<th>File 1</th>
+<th>File 2</th>
+<th>Similarity</th>
+<th>Risk</th>
+</tr>
+
+{% for r in results %}
+
+<tr>
+
+<td>{{r.file1}}</td>
+<td>{{r.file2}}</td>
+
+<td>
+
+<div style="background:#ddd;width:100%">
+<div class="bar" style="width:{{r.score}}%"></div>
+</div>
+
+{{r.score}}%
+
+</td>
+
+<td class="{{r.risk|lower}}">{{r.risk}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<br><br>
+
+<h3>Plagiarism Network Graph</h3>
+
+<img src="{{graph}}" width="600">
+
+<br><br>
+
+<a href="/download/{{pdf}}">
+<button>Download PDF Report</button>
+</a>
+
+<br><br>
+
+<a href="/">Check Again</a>
+
+</body>
+
+</html>
