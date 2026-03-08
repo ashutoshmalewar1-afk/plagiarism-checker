@@ -1,63 +1,56 @@
+# app.py
 import os
-from flask import Flask, render_template, request, send_file
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from reportlab.pdfgen import canvas
+from flask import Flask, render_template, request, jsonify
+import matplotlib.pyplot as plt
+import io
+import base64
 
+# You can import other libraries you need
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+# Initialize Flask app
 app = Flask(__name__)
 
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-
-def calculate_similarity(text1, text2):
-    vectorizer = TfidfVectorizer()
-    vectors = vectorizer.fit_transform([text1, text2])
-    similarity = cosine_similarity(vectors)[0][1]
-    return round(similarity * 100, 2)
-
-
+# Example route: Home page
 @app.route("/")
-def index():
-    return render_template("index.html")
+def home():
+    return "<h1>Welcome to My Flask App on Render!</h1>"
 
+# Example route: Generate a simple plot
+@app.route("/plot")
+def plot():
+    # Create a simple plot
+    x = np.linspace(0, 10, 100)
+    y = np.sin(x)
+    
+    plt.figure()
+    plt.plot(x, y)
+    plt.title("Sample Plot")
+    
+    # Save plot to PNG image in memory
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plot_url = base64.b64encode(img.getvalue()).decode()
+    plt.close()
+    
+    return f'<img src="data:image/png;base64,{plot_url}"/>'
 
-@app.route("/check", methods=["POST"])
-def check():
-    file1 = request.files.get("file1")
-    file2 = request.files.get("file2")
+# Example route: Use sentence-transformers
+@app.route("/encode", methods=["POST"])
+def encode():
+    data = request.json
+    if not data or "text" not in data:
+        return jsonify({"error": "Missing 'text' in request"}), 400
+    
+    text = data["text"]
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    embedding = model.encode(text).tolist()
+    
+    return jsonify({"embedding": embedding})
 
-    if not file1 or not file2:
-        return "Please upload both files."
-
-    path1 = os.path.join(UPLOAD_FOLDER, file1.filename)
-    path2 = os.path.join(UPLOAD_FOLDER, file2.filename)
-
-    file1.save(path1)
-    file2.save(path2)
-
-    with open(path1, "r", encoding="utf-8", errors="ignore") as f:
-        text1 = f.read()
-
-    with open(path2, "r", encoding="utf-8", errors="ignore") as f:
-        text2 = f.read()
-
-    similarity = calculate_similarity(text1, text2)
-
-    pdf_path = "plagiarism_report.pdf"
-    c = canvas.Canvas(pdf_path)
-    c.drawString(100, 750, "Plagiarism Report")
-    c.drawString(100, 720, f"Similarity Score: {similarity}%")
-    c.save()
-
-    return render_template("result.html", similarity=similarity)
-
-
-@app.route("/download")
-def download():
-    return send_file("plagiarism_report.pdf", as_attachment=True)
-
-
+# Ensure Render detects the correct port
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
