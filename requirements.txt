@@ -4,3 +4,4 @@ scikit-learn
 reportlab
 gunicorn
 sentence-transformers
+matplotlib
